@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IMEDRA Browser - Cybersecurity Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .search-container {
+            max-width: 800px;
+            margin: 100px auto;
+            text-align: center;
+        }
+        .search-box {
+            width: 80%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            border: 2px solid #ddd;
+            border-radius: 24px;
+            font-size: 16px;
+            outline: none;
+        }
+        .search-box:focus {
+            border-color: #4285f4;
+        }
+        .search-button {
+            background-color: #4285f4;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .search-button:hover {
+            background-color: #357abd;
+        }
+        .results {
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: left;
+        }
+        .result-item {
+            background-color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .result-title {
+            color: #1a0dab;
+            font-size: 18px;
+            margin-bottom: 5px;
+            text-decoration: none;
+        }
+        .result-url {
+            color: #006621;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .result-summary {
+            color: #545454;
+            font-size: 14px;
+        }
+        .score {
+            float: right;
+            background-color: #e8f0fe;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #4285f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <h1>IMEDRA Browser</h1>
+        <h2>Cybersecurity Search Engine</h2>
+        <input type="text" id="search-input" class="search-box" placeholder="Search for cybersecurity topics...">
+        <br>
+        <button onclick="performSearch()" class="search-button">Search</button>
+    </div>
+    <div id="results" class="results"></div>
+
+    <script>
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        function performSearch() {
+            const query = document.getElementById('search-input').value;
+            if (!query) return;
+
+            fetch(`/search?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = '';
+
+                    if (data.results && data.results.length > 0) {
+                        data.results.forEach(result => {
+                            const resultItem = document.createElement('div');
+                            resultItem.className = 'result-item';
+                            resultItem.innerHTML = `
+                                <div class="score">Score: ${result.score}</div>
+                                <a href="${result.url}" class="result-title">${result.title}</a>
+                                <div class="result-url">${result.url}</div>
+                                <div class="result-summary">${result.summary}</div>
+                            `;
+                            resultsDiv.appendChild(resultItem);
+                        });
+                    } else {
+                        resultsDiv.innerHTML = '<div class="result-item">No results found</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('results').innerHTML = 
+                        '<div class="result-item">An error occurred while searching</div>';
+                });
+        }
+    </script>
+</body>
+</html>

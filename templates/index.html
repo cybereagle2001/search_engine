@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="IMEDRA SPHERE Research Engine - A specialized search engine for cybersecurity-related content">
+    <title>IMEDRA SPHERE Research Engine</title>
+    <link href="static/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container search-container">
+        <div class="logo-container">
+            <a href="http://imedrasphere.com"><img src="static/images/logo_no_bg.png" alt="IMEDRA SPHERE Logo" width="300" height="auto"></a>
+
+        </div>
+        <div class="title-container">
+            <h1 class="title">
+                IMEDRA SPHERE Research Engine
+            </h1>
+            <p class="subtitle">
+                A specialized search engine that indexes and retrieves cybersecurity-related content.
+                Press <kbd>/</kbd> to focus the search box.
+            </p>
+        </div>
+
+        <div class="search-box" role="search">
+            <div class="row">
+                <div class="col">
+                    <div class="input-group">
+                        <input type="text" id="searchInput" class="form-control" 
+                               placeholder="Search for cybersecurity content... (Press Enter to search)"
+                               aria-label="Search input"
+                               autocomplete="off"
+                               autofocus>
+                        <button class="btn btn-search" type="button" onclick="performSearch()" aria-label="Search">
+                            <i class="fas fa-search" aria-hidden="true"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="results" role="region" aria-live="polite" aria-label="Search results"></div>
+        <div id="pagination" class="pagination-container"></div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const resultsPerPage = 5;
+        let allSearchResults = [];
+
+        // Focus search input when / is pressed
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
+
+        // Search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                currentPage = 1;
+                performSearch();
+            }
+        });
+
+        function displayResults(results) {
+            const resultsDiv = document.getElementById('results');
+            const paginationDiv = document.getElementById('pagination');
+            resultsDiv.innerHTML = '';
+            paginationDiv.innerHTML = '';
+
+            if (!results || results.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="result-card text-center">
+                        <i class="fas fa-search fa-2x mb-3" aria-hidden="true"></i>
+                        <p>No results found. Try different keywords.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Calculate pagination
+            const startIndex = (currentPage - 1) * resultsPerPage;
+            const endIndex = Math.min(startIndex + resultsPerPage, results.length);
+            const totalPages = Math.ceil(results.length / resultsPerPage);
+
+            // Display current page results
+            for (let i = startIndex; i < endIndex; i++) {
+                const item = results[i];
+                const resultCard = document.createElement('div');
+                resultCard.className = 'result-card';
+                resultCard.innerHTML = `
+                    <h3>
+                        <a href="${item.url}" target="_self" rel="noopener">
+                            <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                            ${item.title}
+                        </a>
+                    </h3>
+                    <p class="summary">${item.summary}</p>
+                    <small><i class="fas fa-chart-line"></i>Relevance Score: ${item.score.toFixed(2)}</small>
+                `;
+                resultsDiv.appendChild(resultCard);
+            }
+
+            // Create pagination controls
+            if (totalPages > 1) {
+                const paginationHTML = `
+                    <button onclick="changePage(${Math.max(1, currentPage - 1)})" ${currentPage === 1 ? 'disabled' : ''}>
+                        Previous
+                    </button>
+                    <span>Page ${currentPage} of ${totalPages}</span>
+                    <button onclick="changePage(${Math.min(totalPages, currentPage + 1)})" ${currentPage === totalPages ? 'disabled' : ''}>
+                        Next
+                    </button>
+                `;
+                paginationDiv.innerHTML = paginationHTML;
+            }
+
+            // Auto-scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function changePage(newPage) {
+            currentPage = newPage;
+            displayResults(allSearchResults);
+        }
+
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) return;
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="text-center" role="status"><i class="fas fa-circle-notch fa-spin fa-2x"></i><span class="visually-hidden">Loading results...</span></div>';
+
+            try {
+                const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                allSearchResults = data.results || [];
+                displayResults(allSearchResults);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = `
+                    <div class="result-card text-center">
+                        <i class="fas fa-exclamation-circle fa-2x mb-3" aria-hidden="true"></i>
+                        <p>An error occurred while searching: ${error.message}</p>
+                    </div>
+                `;
+                console.error('Search error:', error);
+            }
+        }
+    </script>
+    <script src="static/js/neural-background.js"></script>
+</body>
+</html>
