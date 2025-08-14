@@ -26,13 +26,6 @@ SEARCH_ENGINES = [
         }
     },
     {
-        'name': 'Bing',
-        'url': 'https://www.bing.com/search',
-        'params': lambda query, page: {
-            'q': query,
-            'first': (page - 1) * 10 + 1
-        }
-    },
     {
         'name': 'DuckDuckGo',
         'url': 'https://html.duckduckgo.com/html/',
