@@ -26,7 +26,6 @@ SEARCH_ENGINES = [
         }
     },
     {
-    {
         'name': 'DuckDuckGo',
         'url': 'https://html.duckduckgo.com/html/',
         'params': lambda query, page: {
