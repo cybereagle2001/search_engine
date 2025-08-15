@@ -14,6 +14,34 @@ RATE_LIMIT_WINDOW = 60  # seconds
 MAX_REQUESTS_PER_WINDOW = 10
 request_timestamps = []
 
+# IMEDRA Sphere Applications
+IMEDRA_APPS = {
+    'mail': {
+        'name': 'IMEDRA Mail',
+        'url': 'https://mail.imedrasphere.com/webmail',
+        'description': 'Secure email service',
+        'icon': '📧'
+    },
+    'docs': {
+        'name': 'IMEDRA Docs',
+        'url': 'https://docs.imedrasphere.com',
+        'description': 'Collaborative document editing',
+        'icon': '📝'
+    },
+    'drive': {
+        'name': 'IMEDRA Storage',
+        'url': 'https://storage.imedrasphere.com',
+        'description': 'Cloud storage and file sharing',
+        'icon': '💾'
+    },
+    'school': {
+        'name': 'IMEDRA School',
+        'url': 'https://school.imedrasphere.com',
+        'description': 'Educational platform and resources',
+        'icon': '🎓'
+    }
+}
+
 # Search engines configuration
 SEARCH_ENGINES = [
     {
@@ -274,13 +302,39 @@ def get_page_info(url):
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('index.html', apps=IMEDRA_APPS)
+
+@app.route('/apps')
+def apps():
+    return jsonify(IMEDRA_APPS)
+
+@app.route('/app/<app_name>')
+def app_redirect(app_name):
+    if app_name in IMEDRA_APPS:
+        app_info = IMEDRA_APPS[app_name]
+        # Redirect to the actual app URL
+        return jsonify({'redirect': app_info['url']})
+    return jsonify({'error': 'App not found'}), 404
 
 @app.route('/search')
 def search():
     query = request.args.get('q', '')
     if not query:
         return jsonify({'results': []})
+    
+    # Check if query matches an IMEDRA app name
+    query_lower = query.lower().strip()
+    if query_lower in IMEDRA_APPS:
+        app_info = IMEDRA_APPS[query_lower]
+        return jsonify({
+            'results': [{
+                'title': f"{app_info['icon']} {app_info['name']}",
+                'url': app_info['url'],
+                'summary': app_info['description'],
+                'score': 2.0,  # High score for direct app matches
+                'is_app': True  # Flag to indicate this is an app shortcut
+            }]
+        })
     
     try:
         # Add cybersecurity context to the query
