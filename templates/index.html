@@ -4,22 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="IMEDRA SPHERE Research Engine - A specialized search engine for cybersecurity-related content">
-    <title>IMEDRA SPHERE Research Engine</title>
+    <title>IMEDRA SPHERE Search Engine</title>
     <link href="static/css/style.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Navigation bar styles */
+        .navbar {
+            background-color: #1a1a2e;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .navbar-left a, .navbar-right a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .navbar-left a:hover, .navbar-right a:hover {
+            background-color: #16213e;
+        }
+        
+        .navbar-right a {
+            background-color: #0f3460;
+            margin-left: 10px;
+        }
+        
+        .navbar-right a:hover {
+            background-color: #1a4aaa;
+        }
+        
+        .apps-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .apps-title {
+            color: white;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .navbar-left, .navbar-right {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .apps-container {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="http://imedrasphere.com" title="IMEDRA SPHERE Home">
+                <i class="fas fa-home"></i> Home
+            </a>
+        </div>
+        <div class="navbar-right">
+            <div class="apps-container">
+                <a href="https://mail.imedrasphere.com/webmail" target="_blank" title="IMEDRA Mail - Secure email service">
+                    <i class="fas fa-envelope"></i> Mail
+                </a>
+                <a href="https://docs.imedrasphere.com" target="_blank" title="IMEDRA Docs - Collaborative documents">
+                    <i class="fas fa-file-alt"></i> Docs
+                </a>
+                <a href="https://drive.imedrasphere.com" target="_blank" title="IMEDRA Drive - Cloud storage">
+                    <i class="fas fa-cloud"></i> Drive
+                </a>
+                <a href="https://school.imedrasphere.com" target="_blank" title="IMEDRA School - Educational platform">
+                    <i class="fas fa-graduation-cap"></i> School
+                </a>
+            </div>
+        </div>
+    </nav>
+
     <div class="container search-container">
         <div class="logo-container">
             <a href="http://imedrasphere.com"><img src="static/images/logo_no_bg.png" alt="IMEDRA SPHERE Logo" width="300" height="auto"></a>
-
         </div>
         <div class="title-container">
             <h1 class="title">
                 IMEDRA SPHERE Research Engine
             </h1>
             <p class="subtitle">
-                A specialized search engine that indexes and retrieves cybersecurity and IT related content.
+                A specialized search engine that indexes and retrieves cybersecurity-related content.
                 Press <kbd>/</kbd> to focus the search box.
             </p>
         </div>
